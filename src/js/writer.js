@@ -3,45 +3,49 @@ var dates = require("./dates.js")
 var now = dates.getToday()
 var week = dates.getWeek()
 var quarter = dates.getQuarter()
-var events = require("./events.js").getEventsFromFile()
 var struct = require("./structures.js")
 var exception = require("./exception.js").exception()
+var ical = require("ical")
+var eventsParser = require("./events.js") 
 module.exports = {
   
   writeNewsletter: function() {
-    let app = document.getElementById('app');
-    app.insertAdjacentHTML("beforeend","<b>Announcements: </b>")
-    app.insertAdjacentHTML("beforeend", "<br>")
-    app.insertAdjacentHTML("beforeend", "<br>")
-    let tCEvents = events.filter(checktCEvent)
-    printEvents(app, tCEvents, true)
-    app.insertAdjacentHTML("beforeend", "<br>")
-    app.insertAdjacentHTML("beforeend", "Events from Coalition Participants: ")
-    app.insertAdjacentHTML("beforeend", "<br>")
-    let otherEvents = events.filter(checkOtherEvent)
-    printEvents(app, otherEvents, false)
-    app.insertAdjacentHTML("beforeend", "<br>")
-    app.insertAdjacentHTML("beforeend", "<b>The Week's News Wrap Up by Jara:</b>")
-    app.insertAdjacentHTML("beforeend", "<br>")
-    app.insertAdjacentHTML("beforeend", "<br>")
-    app.insertAdjacentHTML("beforeend", "<b>Points of Contact:</b>")
-    app.insertAdjacentHTML("beforeend", "<br>")
-    app.insertAdjacentHTML("beforeend", "<br>")
-    app.insertAdjacentHTML("beforeend", "<a href='http://www.the-coalition.berlin'>the-coalition.berlin</a>")
-    app.insertAdjacentHTML("beforeend", "<br>")
-    app.insertAdjacentHTML("beforeend", "<a href='https://www.facebook.com/thecoalitionberlin/'>Facebook</a>")
-    app.insertAdjacentHTML("beforeend", "<br>")
-    app.insertAdjacentHTML("beforeend", "<a href='https://twitter.com/TheCoalitionDE'>Twitter</a>")
-    app.insertAdjacentHTML("beforeend", "<br>")
-    app.insertAdjacentHTML("beforeend", "To subscribe to this newsletter - email: cuf-newsletter-subscribe@lists.riseup.net")
-    app.insertAdjacentHTML("beforeend", "<br>")
-    app.insertAdjacentHTML("beforeend", "To unsubscribe - email: cuf-newsletter-unsubscribe@lists.riseup.net")
-    app.insertAdjacentHTML("beforeend", "<br>")
-    app.insertAdjacentHTML("beforeend", "To submit events to this newsletter - email: newsletter@the-coalition.berlin")
+    var request = new Request('http://the-coalition.berlin/?plugin=all-in-one-event-calendar&controller=ai1ec_exporter_controller&action=export_events&no_html=true')
+    fetch(request).then(function(response) {
+      return response.text().then(function(text){
+        return ical.parseICS(text)
+      }).then(function(data) {
+          var events = eventsParser.getEvents(data)
+          let app = document.getElementById('app');
+          app.insertAdjacentHTML("beforeend","<b>Announcements: </b>")
+          app.insertAdjacentHTML("beforeend", "<br>")
+          app.insertAdjacentHTML("beforeend", "<br>")
+          let tCEvents = events.filter(checktCEvent)
+          printEvents(app, tCEvents, true)
+          app.insertAdjacentHTML("beforeend", "<br>")
+          app.insertAdjacentHTML("beforeend", "Events from Coalition Participants: ")
+          app.insertAdjacentHTML("beforeend", "<br>")
+          let otherEvents = events.filter(checkOtherEvent)
+          printEvents(app, otherEvents, false)
+          app.insertAdjacentHTML("beforeend", "<br>")
+          app.insertAdjacentHTML("beforeend", "<b>The Week's News Wrap Up by Jara:</b>")
+          app.insertAdjacentHTML("beforeend", "<br>")
+          app.insertAdjacentHTML("beforeend", "<br>")
+          app.insertAdjacentHTML("beforeend", "<a href='http://www.the-coalition.berlin'>the-coalition.berlin</a>")
+          app.insertAdjacentHTML("beforeend", "<br>")
+          app.insertAdjacentHTML("beforeend", "<a href='https://www.facebook.com/thecoalitionberlin/'>Facebook</a>")
+          app.insertAdjacentHTML("beforeend", "<br>")
+          app.insertAdjacentHTML("beforeend", "<a href='https://twitter.com/TheCoalitionDE'>Twitter</a>")
+          app.insertAdjacentHTML("beforeend", "<br>")
+          app.insertAdjacentHTML("beforeend", "To subscribe to this newsletter - email: cuf-newsletter-subscribe@lists.riseup.net")
+          app.insertAdjacentHTML("beforeend", "<br>")
+          app.insertAdjacentHTML("beforeend", "To unsubscribe - email: cuf-newsletter-unsubscribe@lists.riseup.net")
+          app.insertAdjacentHTML("beforeend", "<br>")
+          app.insertAdjacentHTML("beforeend", "To submit events to this newsletter - email: newsletter@the-coalition.berlin")
+  })
 
-
-    
-  } 
+  })  
+}
   
 }
 
@@ -140,7 +144,7 @@ function printLaterList(app, events, bold){
         app.insertAdjacentHTML("beforeend", days.getDay(start.getDay()) + " ")
       }
       if(bold){
-        app.insertAdjacentHTML("beforeend","<b>" + dateString + "." + getMonthString(start) + "</b>")
+        app.insertAdjacentHTML("beforeend","<b>" + dateString + "." + getMonthString(start) + " </b>")
       }else{
         app.insertAdjacentHTML("beforeend", dateString + "." + getMonthString(start) + " ")
       }
