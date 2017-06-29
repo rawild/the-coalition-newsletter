@@ -1,10 +1,10 @@
 var dates = require("./dates.js")
 var now = dates.getToday()
-var file = require("../data/newsletter_"+now.getDate()+"_"+(now.getMonth()+1)+".json")
-exports.getEventsFromFile = function() {
+//var file = require("../data/newsletter_"+now.getDate()+"_"+(now.getMonth()+1)+".json")
+/*exports.getEventsFromFile = function() {
   return file;
 
-};
+};*/
 
 exports.getEvents = function(data) {
   var events = []

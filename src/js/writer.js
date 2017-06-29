@@ -10,7 +10,7 @@ var eventsParser = require("./events.js")
 module.exports = {
   
   writeNewsletter: function() {
-    var request = new Request('http://the-coalition.berlin/?plugin=all-in-one-event-calendar&controller=ai1ec_exporter_controller&action=export_events&no_html=true')
+    var request = new Request('https://the-coalition.berlin/?plugin=all-in-one-event-calendar&controller=ai1ec_exporter_controller&action=export_events&no_html=true')
     fetch(request).then(function(response) {
       return response.text().then(function(text){
         return ical.parseICS(text)
